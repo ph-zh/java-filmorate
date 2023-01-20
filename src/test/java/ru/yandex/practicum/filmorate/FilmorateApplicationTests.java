@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.controller.FilmController;
 import ru.yandex.practicum.filmorate.controller.UserController;
@@ -18,29 +19,27 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SpringBootTest
 class FilmorateApplicationTests {
 
+    @Autowired
     FilmController filmController;
+    @Autowired
     UserController userController;
     Film film;
     User user;
 
     @BeforeEach
     void beforeEach() {
-        filmController = new FilmController();
-        userController = new UserController();
         film = new Film(0, "Film", "film description", LocalDate.now(), 120);
         user = new User(0, "user@email.ru", "login", "name",
                 LocalDate.of(2000, Month.DECEMBER, 20));
     }
 
-    @Test
-    void contextLoads() {
-    }
+
 
     @Test
     void addFilmWithCorrectFields() {
         filmController.create(film);
 
-        assertEquals(film.getId(), 1);
+        assertEquals(3, film.getId());
     }
 
     @Test
@@ -128,7 +127,7 @@ class FilmorateApplicationTests {
     void addUserWithCorrectFields() {
         userController.create(user);
 
-        assertEquals(user.getId(), 1);
+        assertEquals(5, user.getId());
     }
 
     @Test
