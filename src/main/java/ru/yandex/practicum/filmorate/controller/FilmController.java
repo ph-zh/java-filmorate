@@ -18,7 +18,7 @@ import java.util.Map;
 public class FilmController {
     private Map<Integer, Film> films = new HashMap<>();
     private int id = 0;
-    private final static LocalDate firstFilmBirthday = LocalDate.of(1895, Month.DECEMBER, 28);
+    private final static LocalDate FIRST_FILM_BIRTHDAY = LocalDate.of(1895, Month.DECEMBER, 28);
 
     @GetMapping
     public Collection<Film> findAll() {
@@ -64,7 +64,7 @@ public class FilmController {
         } else if (film.getDescription().length() > 200) {
             log.warn("Попытка создания фильма с описанием свыше 200 знаков");
             throw new ValidationException("Описание фильма превышает максимальное количество знаков 200");
-        } else if (film.getReleaseDate().isBefore(firstFilmBirthday)) {
+        } else if (film.getReleaseDate().isBefore(FIRST_FILM_BIRTHDAY)) {
             log.warn("Попытка создания фильма с датой, предшествующей появлению первого фильма");
             throw new ValidationException("Дата релиза фильма введена неверна");
         } else if (film.getDuration() <= 0) {
