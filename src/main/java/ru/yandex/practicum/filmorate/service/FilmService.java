@@ -2,29 +2,33 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.dao.LikesDao;
 
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 public class FilmService {
 
     private final LocalDate firstFilmBirthday = LocalDate.of(1895, Month.DECEMBER, 28);
-    private FilmStorage filmStorage;
-    private UserStorage userStorage;
+
+    private final FilmStorage filmStorage;
+    private final UserStorage userStorage;
+    private final LikesDao likesDao;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage, UserStorage userStorage) {
+    public FilmService(@Qualifier("filmsDao") FilmStorage filmStorage, @Qualifier("usersDao") UserStorage userStorage, LikesDao likesDao) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
+        this.likesDao = likesDao;
     }
 
     private void validFilm(Film film) {
@@ -61,27 +65,16 @@ public class FilmService {
         return filmStorage.getById(id);
     }
 
-    public void addLike(Integer id, Integer userId) {
-        Film film = filmStorage.getById(id);
 
-        userStorage.checkUserExist(userId);
-
-        film.getLikesByUsers().add(userId);
+    public void addLikeForDb(Integer id, Integer userId) {
+        likesDao.addLike(id, userId);
     }
 
-    public void removeLike(Integer id, Integer userId) {
-        Film film = filmStorage.getById(id);
-
-        userStorage.checkUserExist(userId);
-
-        film.getLikesByUsers().removeIf(integer -> integer.equals(userId));
+    public void removeLikeFromDb(Integer id, Integer userId) {
+        likesDao.removeLike(id, userId);
     }
 
-    public Collection<Film> getPopular(Integer count) {
-        return filmStorage.findAll().stream().sorted((f1, f2) -> {
-            Integer film1 = f1.getLikesByUsers().size();
-            Integer film2 = f2.getLikesByUsers().size();
-            return film1.compareTo(film2) * -1;
-        }).limit(count).collect(Collectors.toList());
+    public Collection<Film> getPopularFromDb(Integer count) {
+        return likesDao.getPopular(count);
     }
 }
