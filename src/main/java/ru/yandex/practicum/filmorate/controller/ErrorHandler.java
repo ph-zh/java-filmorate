@@ -22,7 +22,7 @@ public class ErrorHandler {
 
     @ExceptionHandler({FilmNotFoundException.class, UserNotFoundException.class, ObjectNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, String> NotFoundExceptionHandler(RuntimeException e) {
+    public Map<String, String> notFoundExceptionHandler(RuntimeException e) {
         return Map.of("error", e.getMessage());
     }
 
