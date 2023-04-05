@@ -7,13 +7,13 @@ import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.service.GenreService;
-import ru.yandex.practicum.filmorate.service.MPAService;
+import ru.yandex.practicum.filmorate.service.impl.GenreServiceImpl;
+import ru.yandex.practicum.filmorate.service.impl.MPAServiceImpl;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 import java.sql.Date;
@@ -26,14 +26,14 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Slf4j
-@Component
+@Repository
 public class FilmsDao implements FilmStorage {
 
     private final JdbcTemplate jdbcTemplate;
-    private final MPAService mpaService;
-    private final GenreService genreService;
+    private final MPAServiceImpl mpaService;
+    private final GenreServiceImpl genreService;
 
-    public FilmsDao(JdbcTemplate jdbcTemplate, MPAService mpaService, GenreService genreService) {
+    public FilmsDao(JdbcTemplate jdbcTemplate, MPAServiceImpl mpaService, GenreServiceImpl genreService) {
         this.jdbcTemplate = jdbcTemplate;
         this.mpaService = mpaService;
         this.genreService = genreService;
@@ -42,9 +42,7 @@ public class FilmsDao implements FilmStorage {
 
     @Override
     public Collection<Film> findAll() {
-        String sql = "select * from films";
-
-        return jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs));
+        return jdbcTemplate.query("select * from films", (rs, rowNum) -> makeFilm(rs));
     }
 
     @Override
