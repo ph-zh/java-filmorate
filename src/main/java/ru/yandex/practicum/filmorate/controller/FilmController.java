@@ -3,27 +3,21 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.service.impl.FilmServiceImpl;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
-import java.time.Month;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 @Slf4j
 @RestController
 @RequestMapping("/films")
 public class FilmController {
 
-    private FilmService filmService;
+    private final FilmServiceImpl filmService;
 
     @Autowired
-    public FilmController(FilmService filmService) {
+    public FilmController(FilmServiceImpl filmService) {
         this.filmService = filmService;
     }
 
@@ -49,16 +43,16 @@ public class FilmController {
 
     @PutMapping("{id}/like/{userId}")
     public void addLike(@PathVariable Integer id, @PathVariable Integer userId) {
-        filmService.addLike(id, userId);
+        filmService.addLikeForDb(id, userId);
     }
 
     @DeleteMapping("{id}/like/{userId}")
     public void removeLike(@PathVariable Integer id, @PathVariable Integer userId) {
-        filmService.removeLike(id, userId);
+        filmService.removeLikeFromDb(id, userId);
     }
 
     @GetMapping("popular")
     public Collection<Film> getPopular(@RequestParam(defaultValue = "10", required = false) Integer count) {
-        return filmService.getPopular(count);
+        return filmService.getPopularFromDb(count);
     }
 }
